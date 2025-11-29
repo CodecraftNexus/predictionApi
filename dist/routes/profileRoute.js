@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const profileController_1 = require("../controllers/profileController");
+const PlanetHouseController_1 = require("../controllers/PlanetHouseController");
+const predictionController_1 = require("../controllers/predictionController");
+const router = (0, express_1.Router)();
+router.get('/profile', auth_1.requireAuth, profileController_1.getProfile);
+router.put('/profile', auth_1.requireAuth, profileController_1.UpdateProfile);
+router.post('/planethouse', auth_1.requireAuth, PlanetHouseController_1.PlanetHouse);
+router.post("/mahadasha", auth_1.requireAuth, PlanetHouseController_1.Mahadasha);
+router.post("/anthardasha", auth_1.requireAuth, PlanetHouseController_1.AntharDasha);
+router.get("/test", auth_1.requireAuth, predictionController_1.sunPrediction);
+exports.default = router;
