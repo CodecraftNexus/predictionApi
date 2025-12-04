@@ -11,14 +11,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProfile = getProfile;
 exports.UpdateProfile = UpdateProfile;
+exports.getJobsOptions = getJobsOptions;
+exports.getEducationOptions = getEducationOptions;
 const db_1 = require("../db");
 const updateProfile_validator_1 = require("../validators/updateProfile.validator");
 function getProfile(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
         try {
             const UserId = req.user.userId;
             const User = db_1.db.User;
-            const user = yield User.findByPk(UserId);
+            const user = yield User.findByPk(UserId, {
+                include: [
+                    {
+                        model: db_1.db.EducationqualificationsItem,
+                        as: "educationItems",
+                        through: { attributes: [] },
+                        attributes: ["id", "qualificationsName"]
+                    },
+                    {
+                        model: db_1.db.JobsItem,
+                        as: "jobItems",
+                        through: { attributes: [] },
+                        attributes: ["id", "JobsName"]
+                    }
+                ]
+            });
             const [gender, location] = yield Promise.all([
                 db_1.db.Gender.findByPk(user === null || user === void 0 ? void 0 : user.genderId),
                 db_1.db.BirthLocation.findByPk(user === null || user === void 0 ? void 0 : user.birth_location_id),
@@ -32,6 +50,8 @@ function getProfile(req, res) {
                 birthTime: user === null || user === void 0 ? void 0 : user.birthTime,
                 gender: gender === null || gender === void 0 ? void 0 : gender.type,
                 whatsappNumber: user === null || user === void 0 ? void 0 : user.WhatsappNumber,
+                education: ((_a = user === null || user === void 0 ? void 0 : user.educationItems) === null || _a === void 0 ? void 0 : _a.map((item) => item.qualificationsName)) || [],
+                jobs: ((_b = user === null || user === void 0 ? void 0 : user.jobItems) === null || _b === void 0 ? void 0 : _b.map((item) => item.JobsName)) || [],
             };
             if (location && String(location.id) !== "1") {
                 payload.birthLocation = location.name;
@@ -44,12 +64,7 @@ function getProfile(req, res) {
                 (location === null || location === void 0 ? void 0 : location.name) &&
                 (location === null || location === void 0 ? void 0 : location.latitude) &&
                 (location === null || location === void 0 ? void 0 : location.longitude);
-            if (!isProfileComplete) {
-                payload.isProfileComplete = false;
-            }
-            else {
-                payload.isProfileComplete = true;
-            }
+            payload.isProfileComplete = !!isProfileComplete;
             return res.json(payload);
         }
         catch (error) {
@@ -60,7 +75,7 @@ function getProfile(req, res) {
 }
 function UpdateProfile(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
+        var _a, _b, _c;
         try {
             const parsed = updateProfile_validator_1.updateProfileSchema.safeParse(req.body);
             if (!parsed.success) {
@@ -71,7 +86,7 @@ function UpdateProfile(req, res) {
                     errors,
                 });
             }
-            const { dateOfBirth, birthTime, latitude, longitude, birthLocation, gender: genderType, whatsappNumber, } = parsed.data;
+            const { dateOfBirth, birthTime, latitude, longitude, birthLocation, gender: genderType, whatsappNumber, jobs, education } = parsed.data;
             const userId = req.user.userId;
             const user = yield db_1.db.User.findByPk(userId, {
                 include: [
@@ -86,6 +101,32 @@ function UpdateProfile(req, res) {
                 });
             }
             const updates = {};
+            if (jobs !== undefined && Array.isArray(jobs)) {
+                yield db_1.db.Jobs.destroy({ where: { userId } });
+                if (jobs.length > 0) {
+                    const jobItems = yield db_1.db.JobsItem.findAll({
+                        where: { JobsName: jobs }
+                    });
+                    const jobRecords = jobItems.map((item) => ({
+                        userId,
+                        JobItemId: item.id
+                    }));
+                    yield db_1.db.Jobs.bulkCreate(jobRecords);
+                }
+            }
+            if (education !== undefined && Array.isArray(education)) {
+                yield db_1.db.Educationqualifications.destroy({ where: { userId } });
+                if (education.length > 0) {
+                    const eduItems = yield db_1.db.EducationqualificationsItem.findAll({
+                        where: { qualificationsName: education }
+                    });
+                    const eduRecord = eduItems.map((item) => ({
+                        userId,
+                        EducationqualificationsItemId: item.id
+                    }));
+                    yield db_1.db.Educationqualifications.bulkCreate(eduRecord);
+                }
+            }
             if (dateOfBirth !== undefined && dateOfBirth !== "") {
                 updates.dateOfBirth = dateOfBirth;
             }
@@ -152,6 +193,22 @@ function UpdateProfile(req, res) {
                     { model: db_1.db.Gender, as: "gender" },
                 ],
             });
+            yield user.reload({
+                include: [
+                    { model: db_1.db.BirthLocation, as: "birthLocation" },
+                    { model: db_1.db.Gender, as: "gender" },
+                    {
+                        model: db_1.db.EducationqualificationsItem,
+                        as: "educationItems",
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: db_1.db.JobsItem,
+                        as: "jobItems",
+                        through: { attributes: [] }
+                    }
+                ],
+            });
             return res.json({
                 success: true,
                 message: "Profile updated successfully",
@@ -163,14 +220,14 @@ function UpdateProfile(req, res) {
                     birthTime: user.birthTime,
                     whatsappNumber: user.WhatsappNumber,
                     gender: ((_a = user.gender) === null || _a === void 0 ? void 0 : _a.type) || null,
-                    birthLocation: user.birthLocation
-                        ? {
-                            id: user.birthLocation.id,
-                            name: user.birthLocation.name,
-                            latitude: user.birthLocation.latitude,
-                            longitude: user.birthLocation.longitude,
-                        }
-                        : null,
+                    jobs: ((_b = user.jobItems) === null || _b === void 0 ? void 0 : _b.map((item) => item.JobName)) || [],
+                    education: ((_c = user.educationItems) === null || _c === void 0 ? void 0 : _c.map((item) => item.qualificationsName)) || [],
+                    birthLocation: user.birthLocation ? {
+                        id: user.birthLocation.id,
+                        name: user.birthLocation.name,
+                        latitude: user.birthLocation.latitude,
+                        longitude: user.birthLocation.longitude,
+                    } : null,
                 },
             });
         }
@@ -181,6 +238,58 @@ function UpdateProfile(req, res) {
                 message: "Internal server error",
                 error: process.env.NODE_ENV === "development" ? error.message : undefined,
             });
+        }
+    });
+}
+function formatCategoryName(name) {
+    const [top, sub] = name.split(' - ');
+    const formatPart = (part) => {
+        let formattedPart = part.replace(/_/g, ' ');
+        if (formattedPart === 'a l streams') {
+            formattedPart = 'A/L Streams';
+        }
+        if (formattedPart.toLowerCase() === 'nvq levels') {
+            formattedPart = 'NVQ Levels';
+        }
+        return formattedPart.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    };
+    return `${formatPart(top)} - ${formatPart(sub)}`;
+}
+function getJobsOptions(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const categories = yield db_1.db.JobsCategory.findAll({
+                include: [{ model: db_1.db.JobsItem, as: "JobsItem" }]
+            });
+            const options = {};
+            categories.forEach(cat => {
+                const formattedName = cat.CategoryName;
+                options[formattedName] = cat['JobsItem'].map((item) => item.JobsName);
+            });
+            return res.json(options);
+        }
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Server error" });
+        }
+    });
+}
+function getEducationOptions(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const categories = yield db_1.db.EducationqualificationsCatagory.findAll({
+                include: [{ model: db_1.db.EducationqualificationsItem, as: "EducationqualificationsItems" }]
+            });
+            const options = {};
+            categories.forEach(cat => {
+                const formattedName = formatCategoryName(cat.CategoryName);
+                options[formattedName] = cat['EducationqualificationsItems'].map((item) => item.qualificationsName);
+            });
+            return res.json(options);
+        }
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Server error" });
         }
     });
 }

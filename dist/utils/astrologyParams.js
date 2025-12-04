@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAstrologyApiParams = getAstrologyApiParams;
 const moment_1 = __importDefault(require("moment"));
 const db_1 = require("../db");
-function getAstrologyApiParams(userIdFromToken) {
+function getAstrologyApiParams(userIdFromToken, Prediction) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
         const userId = Number(userIdFromToken);
@@ -55,16 +55,9 @@ function getAstrologyApiParams(userIdFromToken) {
             tz: '5.5',
             lang: 'si',
         });
-        const paramsPredictionSun = new URLSearchParams({
-            api_key: apiKeyRecord.key,
-            dob: formattedDate,
-            tob: formattedTime,
-            lat: String(user.birthLocation.latitude),
-            lon: String(user.birthLocation.longitude),
-            tz: '5.5',
-            lang: 'si',
-            planet: "Sun",
-        });
-        return { params, userId, paramsPredictionSun };
+        if (Prediction) {
+            params.append('planet', Prediction);
+        }
+        return { params, userId };
     });
 }

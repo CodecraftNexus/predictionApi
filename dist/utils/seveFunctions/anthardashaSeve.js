@@ -1,0 +1,107 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.saveAntardashaFromApi = void 0;
+const sequelize_1 = require("sequelize");
+const db_1 = require("../../db");
+const parseSinhalaDateToEnglish_1 = __importDefault(require("../parseSinhalaDateToEnglish"));
+const saveAntardashaFromApi = (userId, apiResponse) => __awaiter(void 0, void 0, void 0, function* () {
+    const { antardashas, antardasha_order } = apiResponse.response;
+    if (!antardashas || !antardasha_order || antardashas.length !== 9) {
+        throw new Error("Invalid antardasha API response structure");
+    }
+    const mahaRecords = yield db_1.db.DashaBalance.findAll({
+        where: { userId: String(userId) },
+        order: [['From', 'ASC']],
+    });
+    if (mahaRecords.length !== 9) {
+        throw new Error("Mahadasha data not found or incomplete. Save mahadasha first.");
+    }
+    const antarRecordsToSave = [];
+    for (let setIndex = 0; setIndex < 9; setIndex++) {
+        const setNo = setIndex + 1;
+        const mahaFrom = mahaRecords[setIndex].From;
+        let currentFrom = mahaFrom;
+        const names = antardashas[setIndex];
+        const endDates = antardasha_order[setIndex];
+        for (let i = 0; i < 9; i++) {
+            const anthardhashawa = names[i];
+            const toDateSinhala = endDates[i];
+            const To = (0, parseSinhalaDateToEnglish_1.default)(toDateSinhala);
+            antarRecordsToSave.push({
+                userId: String(userId),
+                anthardhashawa,
+                setNo,
+                From: currentFrom,
+                To,
+            });
+            currentFrom = To;
+        }
+    }
+    for (const record of antarRecordsToSave) {
+        const [antarRecord, created] = yield db_1.db.AntharDasha.findOrCreate({
+            where: {
+                userId: record.userId,
+                setNo: record.setNo,
+                anthardhashawa: record.anthardhashawa,
+            },
+            defaults: record,
+        });
+        if (!created) {
+            yield antarRecord.update({
+                From: record.From,
+                To: record.To,
+            });
+        }
+    }
+    const today = new Date().toISOString().split('T')[0];
+    const currentAntardasha = yield db_1.db.AntharDasha.findOne({
+        where: {
+            userId: String(userId),
+            From: { [sequelize_1.Op.lte]: today },
+            To: { [sequelize_1.Op.gte]: today },
+        },
+    });
+    let currentSetData = null;
+    if (currentAntardasha) {
+        const currentSetNo = currentAntardasha.setNo;
+        const currentSet = yield db_1.db.AntharDasha.findAll({
+            where: {
+                userId: String(userId),
+                setNo: currentSetNo
+            },
+            order: [['From', 'ASC']]
+        });
+        currentSetData = currentSet.map(rec => ({
+            anthardhashawa: rec.anthardhashawa,
+            from: rec.From,
+            to: rec.To
+        }));
+    }
+    return {
+        success: true,
+        data: {
+            total_antardashas_saved: antarRecordsToSave.length,
+            current_antardasha: currentAntardasha ? {
+                anthardhashawa: currentAntardasha.anthardhashawa,
+                setNo: currentAntardasha.setNo,
+                from: currentAntardasha.From,
+                to: currentAntardasha.To,
+            } : null,
+            current_antardasha_set: currentSetData,
+        },
+        message: "Antardasha data saved successfully",
+    };
+});
+exports.saveAntardashaFromApi = saveAntardashaFromApi;

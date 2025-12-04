@@ -39,6 +39,8 @@ const seed = () => __awaiter(void 0, void 0, void 0, function* () {
         else {
             console.log('⚠️  Birth location data already exists');
         }
+        yield seedJobsData(queryInterface);
+        yield seedEducationQualificationsData(queryInterface);
         console.log('✅ Seeding completed successfully!');
         yield sequelize_1.sequelize.close();
         process.exit(0);
@@ -50,3 +52,9 @@ const seed = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 seed();
+function seedEducationQualificationsData(queryInterface) {
+    throw new Error('Function not implemented.');
+}
+function seedJobsData(queryInterface) {
+    throw new Error('Function not implemented.');
+}

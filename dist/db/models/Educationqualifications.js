@@ -17,7 +17,7 @@ Educationqualifications.init({
         allowNull: false,
     },
     EducationqualificationsItemId: {
-        type: sequelize_2.DataTypes.STRING(300),
+        type: sequelize_2.DataTypes.INTEGER,
         allowNull: false,
     },
 }, {

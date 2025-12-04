@@ -9,15 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sunPrediction = sunPrediction;
+exports.Predictions = Predictions;
 const env_1 = require("../config/env");
 const astrologyParams_1 = require("../utils/astrologyParams");
-const sunPredictionSeve_1 = require("../utils/sunPredictionSeve");
-function sunPrediction(req, res) {
+const PredictionsSeve_1 = require("../utils/seveFunctions/PredictionsSeve");
+function Predictions(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { paramsPredictionSun, userId } = yield (0, astrologyParams_1.getAstrologyApiParams)(req.user.userId || "");
-            const apiUrl = `${env_1.env.predictionApiUrl}?${paramsPredictionSun}`;
+            const planetName = req.params.planetName;
+            const { params, userId } = yield (0, astrologyParams_1.getAstrologyApiParams)(req.user.userId || "", planetName);
+            const apiUrl = `${env_1.env.predictionApiUrl}?${params}`;
             const response = yield fetch(apiUrl, {
                 headers: {
                     'User-Agent': 'Horoscope/1.0'
@@ -53,15 +54,15 @@ function sunPrediction(req, res) {
                     received: data
                 });
             }
-            const result = yield (0, sunPredictionSeve_1.saveSunPredictionFromApi)(userId, data);
+            const result = yield (0, PredictionsSeve_1.savePredictionFromApi)(userId, data, planetName);
             return res.json({
                 success: true,
-                message: "Anthar Dasha generated and saved successfully",
+                message: `${planetName} prediction generated and saved successfully`,
                 result
             });
         }
         catch (error) {
-            console.error('Error in /anthardhasha route:', error);
+            console.error(`Error in /prediction route for planet ${req.params.planetName}:`, error);
             return res.status(500).json({
                 success: false,
                 message: 'Internal server error',

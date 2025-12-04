@@ -30,4 +30,6 @@ exports.updateProfileSchema = zod_1.z.object({
         .regex(/^[\+]?[0-9]{10,15}$/, "Invalid WhatsApp number")
         .optional()
         .or(zod_1.z.literal("")),
+    jobs: zod_1.z.array(zod_1.z.string()).optional(),
+    education: zod_1.z.array(zod_1.z.string()).optional(),
 });

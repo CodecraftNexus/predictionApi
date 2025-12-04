@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlanetHouse = PlanetHouse;
 exports.Mahadasha = Mahadasha;
 exports.AntharDasha = AntharDasha;
-const savePlanetHouse_1 = require("../utils/savePlanetHouse");
+const savePlanetHouse_1 = require("../utils/seveFunctions/savePlanetHouse");
 const env_1 = require("../config/env");
 const astrologyParams_1 = require("../utils/astrologyParams");
-const mahadashaSeve_1 = require("../utils/mahadashaSeve");
-const anthardashaSeve_1 = require("../utils/anthardashaSeve");
+const mahadashaSeve_1 = require("../utils/seveFunctions/mahadashaSeve");
+const anthardashaSeve_1 = require("../utils/seveFunctions/anthardashaSeve");
 function PlanetHouse(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

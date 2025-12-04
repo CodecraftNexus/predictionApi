@@ -19,6 +19,6 @@ EducationqualificationsCatagory.init({
 }, {
     sequelize: sequelize_2.sequelize,
     modelName: "EducationqualificationsCatagory",
-    tableName: "education_qualifications_catagory",
+    tableName: "education_qualifications_category",
     timestamps: false,
 });

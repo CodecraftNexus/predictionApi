@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sunPrediction = exports.AntharDasha = exports.DashaBalance = exports.PalentHouse = exports.ApiKey = exports.OAuthAccount = exports.RefreshToken = exports.Gender = exports.BirthLocation = exports.User = void 0;
+exports.EducationqualificationsCatagory = exports.Educationqualifications = exports.EducationqualificationsItem = exports.Jobs = exports.JobsCategory = exports.JobsItem = exports.PredictionPlanet = exports.Predictions = exports.AntharDasha = exports.DashaBalance = exports.PalentHouse = exports.ApiKey = exports.OAuthAccount = exports.RefreshToken = exports.Gender = exports.BirthLocation = exports.User = void 0;
 const User_1 = require("./User");
 Object.defineProperty(exports, "User", { enumerable: true, get: function () { return User_1.User; } });
 const hooks_1 = require("../hooks");
@@ -21,8 +21,22 @@ const DashaBalance_1 = require("./DashaBalance");
 Object.defineProperty(exports, "DashaBalance", { enumerable: true, get: function () { return DashaBalance_1.DashaBalance; } });
 const AntharDasha_1 = require("./AntharDasha");
 Object.defineProperty(exports, "AntharDasha", { enumerable: true, get: function () { return AntharDasha_1.AntharDasha; } });
-const PredictionSun_1 = require("./PredictionSun");
-Object.defineProperty(exports, "sunPrediction", { enumerable: true, get: function () { return PredictionSun_1.sunPrediction; } });
+const Predictions_1 = require("./Predictions");
+Object.defineProperty(exports, "Predictions", { enumerable: true, get: function () { return Predictions_1.Predictions; } });
+const PredictionPlanet_1 = require("./PredictionPlanet");
+Object.defineProperty(exports, "PredictionPlanet", { enumerable: true, get: function () { return PredictionPlanet_1.PredictionPlanet; } });
+const JobsItem_1 = require("./JobsItem");
+Object.defineProperty(exports, "JobsItem", { enumerable: true, get: function () { return JobsItem_1.JobsItem; } });
+const JobCategory_1 = require("./JobCategory");
+Object.defineProperty(exports, "JobsCategory", { enumerable: true, get: function () { return JobCategory_1.JobsCategory; } });
+const Jobs_1 = require("./Jobs");
+Object.defineProperty(exports, "Jobs", { enumerable: true, get: function () { return Jobs_1.Jobs; } });
+const EducationqualificationsItem_1 = require("./EducationqualificationsItem");
+Object.defineProperty(exports, "EducationqualificationsItem", { enumerable: true, get: function () { return EducationqualificationsItem_1.EducationqualificationsItem; } });
+const Educationqualifications_1 = require("./Educationqualifications");
+Object.defineProperty(exports, "Educationqualifications", { enumerable: true, get: function () { return Educationqualifications_1.Educationqualifications; } });
+const EducationqualificationsCategory_1 = require("./EducationqualificationsCategory");
+Object.defineProperty(exports, "EducationqualificationsCatagory", { enumerable: true, get: function () { return EducationqualificationsCategory_1.EducationqualificationsCatagory; } });
 const models = {
     User: User_1.User,
     BirthLocation: BirthLoacation_1.BirthLocation,
@@ -33,7 +47,14 @@ const models = {
     PalentHouse: PlanetHouse_1.PalentHouse,
     DashaBalance: DashaBalance_1.DashaBalance,
     AntharDasha: AntharDasha_1.AntharDasha,
-    sunPrediction: PredictionSun_1.sunPrediction
+    Predictions: Predictions_1.Predictions,
+    PredictionPlanet: PredictionPlanet_1.PredictionPlanet,
+    JobsItem: JobsItem_1.JobsItem,
+    JobsCategory: JobCategory_1.JobsCategory,
+    Jobs: Jobs_1.Jobs,
+    EducationqualificationsItem: EducationqualificationsItem_1.EducationqualificationsItem,
+    Educationqualifications: Educationqualifications_1.Educationqualifications,
+    EducationqualificationsCatagory: EducationqualificationsCategory_1.EducationqualificationsCatagory
 };
 (0, hooks_1.initHooks)(models);
 (0, relationships_1.initRelationship)(models);

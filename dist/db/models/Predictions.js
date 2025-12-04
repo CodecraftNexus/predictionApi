@@ -1,18 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sunPrediction = void 0;
+exports.Predictions = void 0;
 const sequelize_1 = require("../sequelize");
 const sequelize_2 = require("sequelize");
-class sunPrediction extends sequelize_2.Model {
+class Predictions extends sequelize_2.Model {
 }
-exports.sunPrediction = sunPrediction;
-sunPrediction.init({
+exports.Predictions = Predictions;
+Predictions.init({
     id: {
         type: sequelize_2.DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
     userId: {
+        type: sequelize_2.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    PredictionPlanetId: {
         type: sequelize_2.DataTypes.INTEGER,
         allowNull: false,
     },
@@ -34,7 +38,7 @@ sunPrediction.init({
     }
 }, {
     sequelize: sequelize_1.sequelize,
-    modelName: "PredictionSun",
-    tableName: "Prediction_sun",
+    modelName: "Predictions",
+    tableName: "Predictions",
     timestamps: false,
 });

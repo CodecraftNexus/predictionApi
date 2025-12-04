@@ -11,5 +11,7 @@ router.put('/profile', auth_1.requireAuth, profileController_1.UpdateProfile);
 router.post('/planethouse', auth_1.requireAuth, PlanetHouseController_1.PlanetHouse);
 router.post("/mahadasha", auth_1.requireAuth, PlanetHouseController_1.Mahadasha);
 router.post("/anthardasha", auth_1.requireAuth, PlanetHouseController_1.AntharDasha);
-router.get("/test", auth_1.requireAuth, predictionController_1.sunPrediction);
+router.post("/prediction/:planetName", auth_1.requireAuth, predictionController_1.Predictions);
+router.get('/jobs/options', profileController_1.getJobsOptions);
+router.get('/education/options', profileController_1.getEducationOptions);
 exports.default = router;

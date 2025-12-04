@@ -25,7 +25,14 @@ const runMigrations = () => __awaiter(void 0, void 0, void 0, function* () {
         yield createPlanetHouseTable(queryInterface);
         yield createDashaBalanceTable(queryInterface);
         yield createAntharDashaTable(queryInterface);
-        yield createPredictionSunTable(queryInterface);
+        yield createPredictionPlanetTable(queryInterface);
+        yield createPredictionsTable(queryInterface);
+        yield createJobsCategoryTable(queryInterface);
+        yield createJobsItemTable(queryInterface);
+        yield createJobsTable(queryInterface);
+        yield createEducationQualificationsCategoryTable(queryInterface);
+        yield createEducationQualificationsItemTable(queryInterface);
+        yield createEducationQualificationsTable(queryInterface);
         yield seedDefaultData(queryInterface);
         console.log('🎉 All migrations completed successfully!');
     }
@@ -447,14 +454,35 @@ const createAntharDashaTable = (queryInterface) => __awaiter(void 0, void 0, voi
     yield queryInterface.addIndex('anthar_dasha', ['setNo']);
     console.log('✅ Anthar dasha table created successfully!');
 });
-const createPredictionSunTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('📝 Creating Prediction_sun table...');
+const createPredictionPlanetTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating prediction_planet table...');
     const tableExists = yield queryInterface.showAllTables();
-    if (tableExists.includes('Prediction_sun')) {
-        console.log('⚠️  Prediction Sun table already exists, skipping...');
+    if (tableExists.includes('prediction_planet')) {
+        console.log('⚠️  Prediction planet table already exists, skipping...');
         return;
     }
-    yield queryInterface.createTable('Prediction_sun', {
+    yield queryInterface.createTable('prediction_planet', {
+        id: {
+            type: "INTEGER",
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        PlanetName: {
+            type: "VARCHAR(100)",
+            allowNull: false,
+            unique: true
+        }
+    });
+    console.log('✅ Prediction planet table created successfully!');
+});
+const createPredictionsTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating predictions table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('predictions')) {
+        console.log('⚠️  Predictions table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('predictions', {
         id: {
             type: "INTEGER",
             primaryKey: true,
@@ -465,6 +493,14 @@ const createPredictionSunTable = (queryInterface) => __awaiter(void 0, void 0, v
             allowNull: false,
             references: {
                 model: 'users',
+                key: 'id'
+            },
+        },
+        predictionPlanetId: {
+            type: "INTEGER",
+            allowNull: false,
+            references: {
+                model: 'prediction_planet',
                 key: 'id'
             },
         },
@@ -485,8 +521,207 @@ const createPredictionSunTable = (queryInterface) => __awaiter(void 0, void 0, v
             allowNull: false
         }
     });
-    yield queryInterface.addIndex('Prediction_sun', ['userId']);
-    console.log('✅ Prediction sun table created successfully!');
+    try {
+        yield queryInterface.addIndex('predictions', ['predictionPlanetId']);
+    }
+    catch (error) {
+        if (error.name === 'SequelizeDatabaseError' && error.original.code === 'ER_DUP_KEYNAME') {
+            console.log('⚠️  Index on predictionPlanetId already exists, skipping...');
+        }
+        else {
+            throw error;
+        }
+    }
+    try {
+        yield queryInterface.addIndex('predictions', ['userId']);
+    }
+    catch (error) {
+        if (error.name === 'SequelizeDatabaseError' && error.original.code === 'ER_DUP_KEYNAME') {
+            console.log('⚠️  Index on userId already exists, skipping...');
+        }
+        else {
+            throw error;
+        }
+    }
+    console.log('✅ Predictions table created successfully!');
+});
+const createJobsCategoryTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating jobs_category table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('jobs_category')) {
+        console.log('⚠️  Jobs category table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('jobs_category', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        CategoryName: {
+            type: 'VARCHAR(300)',
+            allowNull: false
+        }
+    });
+    console.log('✅ Jobs category table created successfully!');
+});
+const createJobsItemTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating jobs_item table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('jobs_item')) {
+        console.log('⚠️  Jobs item table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('jobs_item', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        JobCategoryId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'jobs_category',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'RESTRICT'
+        },
+        JobsName: {
+            type: 'VARCHAR(300)',
+            allowNull: false
+        }
+    });
+    yield queryInterface.addIndex('jobs_item', ['JobCategoryId']);
+    console.log('✅ Jobs item table created successfully!');
+});
+const createJobsTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating jobs table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('jobs')) {
+        console.log('⚠️  Jobs table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('jobs', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        },
+        JobItemId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'jobs_item',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'RESTRICT'
+        }
+    });
+    yield queryInterface.addIndex('jobs', ['userId']);
+    yield queryInterface.addIndex('jobs', ['JobItemId']);
+    console.log('✅ Jobs table created successfully!');
+});
+const createEducationQualificationsCategoryTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating education_qualifications_category table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('education_qualifications_category')) {
+        console.log('⚠️  Education qualifications category table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('education_qualifications_category', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        CategoryName: {
+            type: 'VARCHAR(300)',
+            allowNull: false
+        }
+    });
+    console.log('✅ Education qualifications category table created successfully!');
+});
+const createEducationQualificationsItemTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating education_qualifications_item table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('education_qualifications_item')) {
+        console.log('⚠️  Education qualifications item table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('education_qualifications_item', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        EducationqualificationsCategoryId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'education_qualifications_category',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'RESTRICT'
+        },
+        qualificationsName: {
+            type: 'VARCHAR(300)',
+            allowNull: false
+        }
+    });
+    yield queryInterface.addIndex('education_qualifications_item', ['EducationqualificationsCategoryId']);
+    console.log('✅ Education qualifications item table created successfully!');
+});
+const createEducationQualificationsTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating education_qualifications table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('education_qualifications')) {
+        console.log('⚠️  Education qualifications table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('education_qualifications', {
+        id: {
+            type: 'INTEGER',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        userId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        },
+        EducationqualificationsItemId: {
+            type: 'INTEGER',
+            allowNull: false,
+            references: {
+                model: 'education_qualifications_item',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'RESTRICT'
+        }
+    });
+    yield queryInterface.addIndex('education_qualifications', ['userId']);
+    yield queryInterface.addIndex('education_qualifications', ['EducationqualificationsItemId']);
+    console.log('✅ Education qualifications table created successfully!');
 });
 const seedDefaultData = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('📝 Seeding default data...');
@@ -514,9 +749,329 @@ const seedDefaultData = (queryInterface) => __awaiter(void 0, void 0, void 0, fu
         else {
             console.log('⚠️  Birth location data already exists, skipping seed...');
         }
+        yield seedJobsData(queryInterface);
+        yield seedEducationQualificationsData(queryInterface);
         console.log('✅ All default data seeded successfully!');
     }
     catch (error) {
         console.error('⚠️  Error seeding data:', error);
     }
+});
+const seedJobsData = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Seeding jobs data...');
+    const jobsJson = {
+        "jobs": {
+            "IT & Software": [
+                "Software Engineer",
+                "Full Stack Developer",
+                "Mobile App Developer (Android / iOS)",
+                "Cloud Engineer",
+                "DevOps Engineer",
+                "Data Scientist",
+                "Machine Learning Engineer",
+                "Cybersecurity Analyst",
+                "UI/UX Designer",
+                "QA Engineer / Automation Tester",
+                "IT Project Manager",
+                "Network Administrator"
+            ],
+            "Engineering": [
+                "Civil Engineer",
+                "Mechanical Engineer",
+                "Electrical Engineer",
+                "Electronic / Telecommunication Engineer",
+                "Quantity Surveyor",
+                "Structural Engineer",
+                "Project Engineer",
+                "Mechatronics Engineer",
+                "Environmental Engineer"
+            ],
+            "Medical & Healthcare": [
+                "Medical Officer",
+                "Specialist Doctor",
+                "Nursing Officer",
+                "Pharmacist",
+                "Laboratory Technician",
+                "Radiographer",
+                "Physiotherapist",
+                "Public Health Inspector (PHI)",
+                "Medical Research Officer"
+            ],
+            "Business, Finance & Administration": [
+                "Accountant",
+                "Auditor",
+                "Financial Analyst",
+                "Business Analyst",
+                "HR Manager",
+                "Admin Executive",
+                "Operations Manager",
+                "Marketing Manager",
+                "Customer Relationship Manager (CRM)",
+                "Procurement Officer"
+            ],
+            "Education": [
+                "School Teacher",
+                "University Lecturer",
+                "Tutor",
+                "Special Needs Teacher",
+                "Principal",
+                "Education Consultant"
+            ],
+            "Government & Public Sector": [
+                "Administrative Service Officer (SLAS)",
+                "Engineering Service Officer (SLEngS)",
+                "Education Service Officer",
+                "Police Officer",
+                "Tri-Forces Officer",
+                "Development Officer",
+                "Public Management Officer"
+            ],
+            "Banking & Finance": [
+                "Bank Manager",
+                "Banking Assistant",
+                "Credit Officer",
+                "Loan Executive",
+                "Risk Analyst",
+                "Investment Advisor",
+                "Insurance Advisor",
+                "Branch Operations Manager"
+            ],
+            "Logistics & Supply Chain": [
+                "Logistics Manager",
+                "Supply Chain Executive",
+                "Warehouse Manager",
+                "Transport Manager",
+                "Customs Officer",
+                "Shipping Executive",
+                "Freight Forwarder"
+            ],
+            "Legal & Law Enforcement": [
+                "Attorney-at-Law",
+                "Notary Public",
+                "Legal Executive",
+                "Judicial Officer",
+                "Compliance Officer"
+            ],
+            "Hospitality & Tourism": [
+                "Hotel Manager",
+                "Chef",
+                "Tour Guide",
+                "Travel Consultant",
+                "Guest Relations Officer",
+                "Front Office Executive"
+            ],
+            "Media & Creative": [
+                "Graphic Designer",
+                "Video Editor",
+                "Photographer",
+                "Content Creator",
+                "Social Media Manager",
+                "Journalist",
+                "TV/Radio Presenter",
+                "Animator"
+            ],
+            "Agriculture & Environment": [
+                "Agricultural Officer",
+                "Agronomist",
+                "Environmental Scientist",
+                "Food Technologist",
+                "Plantation Manager"
+            ],
+            "Construction & Technical": [
+                "Architect",
+                "Draftsman",
+                "Site Supervisor",
+                "Safety Officer (HSE)",
+                "Electrician",
+                "Plumber",
+                "Welder",
+                "Heavy Vehicle Operator"
+            ],
+            "Sales & Customer Support": [
+                "Sales Executive",
+                "Business Development Manager",
+                "Customer Support Officer",
+                "Call Center Agent",
+                "Retail Manager"
+            ],
+            "Airline, Marine & Transport": [
+                "Pilot",
+                "Aircraft Maintenance Engineer",
+                "Flight Attendant",
+                "Marine Engineer",
+                "Ship Captain",
+                "Driver (Light/Heavy)",
+                "Train Driver"
+            ]
+        }
+    };
+    const [jobsCatCount] = yield sequelize_1.sequelize.query('SELECT COUNT(*) as count FROM jobs_category');
+    if (jobsCatCount[0].count > 0) {
+        console.log('⚠️  Jobs data already exists, skipping seed...');
+        return;
+    }
+    for (const catName of Object.keys(jobsJson.jobs)) {
+        yield queryInterface.bulkInsert('jobs_category', [{ CategoryName: catName }]);
+        const [[{ id }]] = yield sequelize_1.sequelize.query(`SELECT id FROM jobs_category WHERE CategoryName = ? LIMIT 1`, { replacements: [catName] });
+        const items = jobsJson.jobs[catName].map((name) => ({ JobCategoryId: id, JobsName: name }));
+        yield queryInterface.bulkInsert('jobs_item', items);
+    }
+    console.log('✅ Jobs data seeded successfully');
+});
+const seedEducationQualificationsData = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Seeding education qualifications data...');
+    const educationJson = {
+        "education_qualifications_sri_lanka": {
+            "school_level": {
+                "general_education": [
+                    "Preschool / Early Childhood Education",
+                    "Grade 1–11 (Compulsory Education)",
+                    "GCE Ordinary Level (O/L)",
+                    "GCE Advanced Level (A/L)"
+                ],
+                "a_l_streams": [
+                    "Arts",
+                    "Commerce",
+                    "Science",
+                    "Technology",
+                    "Engineering Technology",
+                    "Bio System Technology",
+                    "Information & Communication Technology (ICT)"
+                ]
+            },
+            "vocational_and_technical": {
+                "nvq_levels": {
+                    "NVQ Level 1": "Assistant Level",
+                    "NVQ Level 2": "Semi-skilled Worker",
+                    "NVQ Level 3": "Skilled Worker",
+                    "NVQ Level 4": "Craftsman / Technician",
+                    "NVQ Level 5": "Diploma Level",
+                    "NVQ Level 6": "Higher National Diploma (HND equivalent)",
+                    "NVQ Level 7": "Bachelor's Degree (Technology / Applied)"
+                },
+                "other_technical_qualifications": [
+                    "Certificate (Level 3 / 4)",
+                    "National Certificate (NC)",
+                    "National Vocational Certificate (NVC)",
+                    "National Diploma (ND)",
+                    "National Apprenticeship Qualification (NAITA)",
+                    "Higher National Diploma (HNDE, HNDIT, HNDM, HNDA)"
+                ]
+            },
+            "university_and_higher_education": {
+                "undergraduate": [
+                    "Certificate Course (University)",
+                    "Diploma",
+                    "Higher National Diploma (HND)",
+                    "Bachelor of Arts (BA)",
+                    "Bachelor of Science (BSc)",
+                    "Bachelor of Engineering (BSc Eng)",
+                    "Bachelor of Commerce (BCom)",
+                    "Bachelor of Laws (LLB)",
+                    "Bachelor of Business Administration (BBA)",
+                    "Bachelor of Medicine & Surgery (MBBS)",
+                    "Bachelor of ICT (BICT)",
+                    "Bachelor of Information Technology (BIT)",
+                    "Bachelor of Education (BEd)",
+                    "Bachelor Honours Degree (4-year specialization)"
+                ],
+                "postgraduate": [
+                    "Postgraduate Certificate (PG Cert)",
+                    "Postgraduate Diploma (PG Dip)",
+                    "Master of Arts (MA)",
+                    "Master of Science (MSc)",
+                    "Master of Business Administration (MBA)",
+                    "Master of Engineering (MEng)",
+                    "Master of Education (MEd)",
+                    "Master of Public Health (MPH)",
+                    "Master of Philosophy (MPhil)",
+                    "Doctor of Philosophy (PhD / Doctorate)"
+                ]
+            },
+            "professional_qualifications": {
+                "accounting_and_finance": [
+                    "CA Sri Lanka (Chartered Accountant)",
+                    "CIMA",
+                    "ACCA",
+                    "CMA Sri Lanka"
+                ],
+                "it_and_software": [
+                    "SLIIT Professional Courses",
+                    "CISCO CCNA / CCNP",
+                    "Microsoft Certifications",
+                    "AWS Certifications",
+                    "Oracle Certified",
+                    "RedHat (RHCE)"
+                ],
+                "engineering_and_technical": [
+                    "Engineering Council Sri Lanka Registration",
+                    "IESL Chartered Engineer",
+                    "NDT / NAITA",
+                    "AMIE (India)"
+                ],
+                "management_and_hr": [
+                    "SLIM",
+                    "CIM",
+                    "CIPM (PQHRM)"
+                ],
+                "education": [
+                    "Diploma in Teaching",
+                    "Teacher Training College Certifications",
+                    "NIE Postgraduate Programs"
+                ],
+                "health": [
+                    "Nursing Diploma",
+                    "SLMC Recognized Medical Degrees",
+                    "Pharmacy Certificate",
+                    "Medical Laboratory Technician (MLT)"
+                ]
+            },
+            "other_recognized_qualifications": {
+                "language_certifications": [
+                    "IELTS",
+                    "TOEFL",
+                    "JLPT (Japanese)",
+                    "TOPIK (Korean)"
+                ],
+                "teaching": [
+                    "TESOL",
+                    "TEFL"
+                ],
+                "maritime_training": [
+                    "IMO Certifications",
+                    "Merchant Navy Courses"
+                ],
+                "aviation_training": [
+                    "CAA Sri Lanka Approved Airline Courses"
+                ]
+            }
+        }
+    };
+    const [eduCatCount] = yield sequelize_1.sequelize.query('SELECT COUNT(*) as count FROM education_qualifications_category');
+    if (eduCatCount[0].count > 0) {
+        console.log('⚠️  Education qualifications data already exists, skipping seed...');
+        return;
+    }
+    const root = educationJson.education_qualifications_sri_lanka;
+    for (const topCategory of Object.keys(root)) {
+        const subs = root[topCategory];
+        for (const subCategory of Object.keys(subs)) {
+            const catName = `${topCategory} - ${subCategory}`;
+            yield queryInterface.bulkInsert('education_qualifications_category', [{ CategoryName: catName }]);
+            const [[{ id }]] = yield sequelize_1.sequelize.query(`SELECT id FROM education_qualifications_category WHERE CategoryName = ? LIMIT 1`, { replacements: [catName] });
+            let items = [];
+            const value = subs[subCategory];
+            if (Array.isArray(value)) {
+                items = value;
+            }
+            else if (typeof value === 'object' && value !== null) {
+                items = Object.keys(value).map(key => `${key} - ${value[key]}`);
+            }
+            const itemRecords = items.map(name => ({ EducationqualificationsCategoryId: id, qualificationsName: name }));
+            if (itemRecords.length > 0) {
+                yield queryInterface.bulkInsert('education_qualifications_item', itemRecords);
+            }
+        }
+    }
+    console.log('✅ Education qualifications data seeded successfully');
 });
