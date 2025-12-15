@@ -22,11 +22,7 @@ services:
       - predictionApiUrl=https://api.vedicastroapi.com/v3-json/horoscope/planet-report
       - navamApi=https://api.vedicastroapi.com/v3-json/horoscope/divisional-charts
       - astrologic=https://api.vedicastroapi.com/v3-json/extended-horoscope/extended-kundli-details
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
+      - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
       - ACCESS_TOKEN_EXPIRES_IN=1h
       - REFRESH_TOKEN_EXPIRES_IN=7d

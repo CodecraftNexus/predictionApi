@@ -18,7 +18,6 @@ const Env = zod_1.z.object({
     PORT: zod_1.z.coerce.number().default(5000),
     TIMEZONE: zod_1.z.string().default("+05:30"),
     DATABASE_URL: zod_1.z.string(),
-    DB_NAME: zod_1.z.string(),
     JWT_SECRET: zod_1.z.string().min(32),
     ACCESS_TOKEN_EXPIRES_IN: zod_1.z.string().default("15m"),
     REFRESH_TOKEN_EXPIRES_IN: zod_1.z.string().default("7d"),
@@ -36,7 +35,6 @@ const Env = zod_1.z.object({
     navamApi: zod_1.z.string(),
     astrologic: zod_1.z.string(),
     DB_SSL: zod_1.z.string(),
-    AUTO_MIGRATE: zod_1.z.string(),
 });
 exports.env = Env.parse(process.env);
 exports.corsOrigins = exports.env.CORS_ORIGINS.split(",").map((s) => s.trim());
