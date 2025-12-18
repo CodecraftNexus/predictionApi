@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminOAuthAccount = exports.AdminRefreshToken = exports.Admin = exports.planetLocatinsPredictins = exports.AstrologicalDetails = exports.Navamsaka = exports.ProfileImage = exports.EducationqualificationsCatagory = exports.Educationqualifications = exports.EducationqualificationsItem = exports.Jobs = exports.JobsCategory = exports.JobsItem = exports.PredictionPlanet = exports.Predictions = exports.AntharDasha = exports.DashaBalance = exports.PalentHouse = exports.ApiKey = exports.OAuthAccount = exports.RefreshToken = exports.Gender = exports.BirthLocation = exports.User = void 0;
+exports.AdminOAuthAccount = exports.AdminRefreshToken = exports.Admin = exports.Payment = exports.UserSubscription = exports.SubscriptionPackage = exports.planetLocatinsPredictins = exports.AstrologicalDetails = exports.Navamsaka = exports.ProfileImage = exports.EducationqualificationsCatagory = exports.Educationqualifications = exports.EducationqualificationsItem = exports.Jobs = exports.JobsCategory = exports.JobsItem = exports.PredictionPlanet = exports.Predictions = exports.AntharDasha = exports.DashaBalance = exports.PalentHouse = exports.ApiKey = exports.OAuthAccount = exports.RefreshToken = exports.Gender = exports.BirthLocation = exports.User = void 0;
 const AstrologicalDetails_1 = require("./AstrologicalDetails");
 Object.defineProperty(exports, "AstrologicalDetails", { enumerable: true, get: function () { return AstrologicalDetails_1.AstrologicalDetails; } });
 const User_1 = require("./User");
@@ -51,6 +51,12 @@ const AdminOAuthAccount_1 = require("./AdminOAuthAccount");
 Object.defineProperty(exports, "AdminOAuthAccount", { enumerable: true, get: function () { return AdminOAuthAccount_1.AdminOAuthAccount; } });
 const planetLocatinsPredictins_1 = require("./planetLocatinsPredictins");
 Object.defineProperty(exports, "planetLocatinsPredictins", { enumerable: true, get: function () { return planetLocatinsPredictins_1.planetLocatinsPredictins; } });
+const SubscriptionPackage_1 = require("./SubscriptionPackage");
+Object.defineProperty(exports, "SubscriptionPackage", { enumerable: true, get: function () { return SubscriptionPackage_1.SubscriptionPackage; } });
+const UserSubscription_1 = require("./UserSubscription");
+Object.defineProperty(exports, "UserSubscription", { enumerable: true, get: function () { return UserSubscription_1.UserSubscription; } });
+const Payment_1 = require("./Payment");
+Object.defineProperty(exports, "Payment", { enumerable: true, get: function () { return Payment_1.Payment; } });
 const models = {
     User: User_1.User,
     BirthLocation: BirthLoacation_1.BirthLocation,
@@ -73,6 +79,9 @@ const models = {
     Navamsaka: Navamsaka_1.Navamsaka,
     AstrologicalDetails: AstrologicalDetails_1.AstrologicalDetails,
     planetLocatinsPredictins: planetLocatinsPredictins_1.planetLocatinsPredictins,
+    SubscriptionPackage: SubscriptionPackage_1.SubscriptionPackage,
+    UserSubscription: UserSubscription_1.UserSubscription,
+    Payment: Payment_1.Payment,
     Admin: Admin_1.Admin,
     AdminRefreshToken: AdminRefreshToken_1.AdminRefreshToken,
     AdminOAuthAccount: AdminOAuthAccount_1.AdminOAuthAccount

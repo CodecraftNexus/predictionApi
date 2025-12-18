@@ -17,6 +17,8 @@ exports.AdminGoogleLogin = AdminGoogleLogin;
 exports.AdminRefreshToken = AdminRefreshToken;
 exports.AdminLogout = AdminLogout;
 exports.GetAdminProfile = GetAdminProfile;
+exports.getIncomeAnalytics = getIncomeAnalytics;
+exports.getUserSubscriptions = getUserSubscriptions;
 const sequelize_1 = __importDefault(require("sequelize"));
 const exceljs_1 = __importDefault(require("exceljs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -855,3 +857,47 @@ const exportAllDataToExcel = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.exportAllDataToExcel = exportAllDataToExcel;
+function getIncomeAnalytics(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const today = new Date();
+            const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const startOfYear = new Date(today.getFullYear(), 0, 1);
+            const [daily, monthly, yearly] = yield Promise.all([
+                db_1.db.Payment.sum('amount', { where: { status: 'success', createdAt: { [sequelize_2.Op.gte]: startOfDay } } }),
+                db_1.db.Payment.sum('amount', { where: { status: 'success', createdAt: { [sequelize_2.Op.gte]: startOfMonth } } }),
+                db_1.db.Payment.sum('amount', { where: { status: 'success', createdAt: { [sequelize_2.Op.gte]: startOfYear } } }),
+            ]);
+            return res.json({
+                success: true,
+                analytics: {
+                    dailyIncome: daily || 0,
+                    monthlyIncome: monthly || 0,
+                    yearlyIncome: yearly || 0,
+                },
+            });
+        }
+        catch (error) {
+            console.error("getIncomeAnalytics error:", error);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+    });
+}
+function getUserSubscriptions(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { userId } = req.params;
+        try {
+            const subscriptions = yield db_1.db.UserSubscription.findAll({
+                where: { userId },
+                include: [db_1.db.SubscriptionPackage, db_1.db.Payment],
+                order: [['startDate', 'DESC']],
+            });
+            return res.json({ success: true, subscriptions });
+        }
+        catch (error) {
+            console.error("getUserSubscriptions error:", error);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+    });
+}

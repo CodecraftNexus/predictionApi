@@ -54,6 +54,10 @@ const runMigrations = () => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, Admin_1.runAdminMigrations)();
         yield seedDefaultData(queryInterface);
         yield seedPredictionPlanetsData(queryInterface);
+        yield createSubscriptionPackagesTable(queryInterface);
+        yield createPaymentsTable(queryInterface);
+        yield createUserSubscriptionsTable(queryInterface);
+        yield seedSubscriptionPackages(queryInterface);
         console.log('🎉 All migrations completed successfully!');
     }
     catch (error) {
@@ -1391,4 +1395,207 @@ const seedEducationQualificationsData = (queryInterface) => __awaiter(void 0, vo
         }
     }
     console.log('✅ Education qualifications data seeded successfully');
+});
+const createSubscriptionPackagesTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating subscription_packages table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('subscription_packages')) {
+        console.log('⚠️  Subscription packages table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('subscription_packages', {
+        id: {
+            type: sequelize_2.DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        name: {
+            type: sequelize_2.DataTypes.STRING(50),
+            allowNull: false,
+            unique: true,
+        },
+        description: {
+            type: sequelize_2.DataTypes.TEXT,
+            allowNull: true,
+        },
+        monthly_price: {
+            type: sequelize_2.DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.00,
+        },
+        yearly_price: {
+            type: sequelize_2.DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.00,
+        },
+        features: {
+            type: sequelize_2.DataTypes.JSONB,
+            allowNull: true,
+        },
+        createdAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+        updatedAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+    });
+    console.log('✅ Subscription packages table created successfully!');
+});
+const createUserSubscriptionsTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating user_subscriptions table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('user_subscriptions')) {
+        console.log('⚠️  User subscriptions table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('user_subscriptions', {
+        id: {
+            type: sequelize_2.DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        userId: {
+            type: sequelize_2.DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: 'users', key: 'id' },
+            onDelete: 'CASCADE',
+        },
+        packageId: {
+            type: sequelize_2.DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: 'subscription_packages', key: 'id' },
+        },
+        duration: {
+            type: sequelize_2.DataTypes.ENUM('monthly', 'yearly'),
+            allowNull: true,
+        },
+        startDate: {
+            type: sequelize_2.DataTypes.DATE,
+            allowNull: false,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+        endDate: {
+            type: sequelize_2.DataTypes.DATE,
+            allowNull: true,
+        },
+        status: {
+            type: sequelize_2.DataTypes.ENUM('active', 'expired', 'cancelled'),
+            allowNull: false,
+            defaultValue: 'active',
+        },
+        paymentId: {
+            type: sequelize_2.DataTypes.INTEGER,
+            allowNull: true,
+            references: { model: 'payments', key: 'id' },
+        },
+        createdAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+        updatedAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+    });
+    console.log('✅ User subscriptions table created successfully!');
+});
+const createPaymentsTable = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('📝 Creating payments table...');
+    const tableExists = yield queryInterface.showAllTables();
+    if (tableExists.includes('payments')) {
+        console.log('⚠️  Payments table already exists, skipping...');
+        return;
+    }
+    yield queryInterface.createTable('payments', {
+        id: {
+            type: sequelize_2.DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        userId: {
+            type: sequelize_2.DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: 'users', key: 'id' },
+            onDelete: 'CASCADE',
+        },
+        amount: {
+            type: sequelize_2.DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+        },
+        currency: {
+            type: sequelize_2.DataTypes.STRING(3),
+            allowNull: false,
+            defaultValue: 'LKR',
+        },
+        gateway: {
+            type: sequelize_2.DataTypes.STRING(50),
+            allowNull: false,
+        },
+        orderId: {
+            type: sequelize_2.DataTypes.STRING(100),
+            allowNull: false,
+            unique: true,
+        },
+        transactionId: {
+            type: sequelize_2.DataTypes.STRING(100),
+            allowNull: true,
+        },
+        status: {
+            type: sequelize_2.DataTypes.ENUM('pending', 'success', 'failed'),
+            allowNull: false,
+            defaultValue: 'pending',
+        },
+        responseData: {
+            type: sequelize_2.DataTypes.JSONB,
+            allowNull: true,
+        },
+        createdAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+        updatedAt: {
+            type: sequelize_2.DataTypes.DATE,
+            defaultValue: sequelize_2.DataTypes.NOW,
+        },
+    });
+    console.log('✅ Payments table created successfully!');
+});
+const seedSubscriptionPackages = (queryInterface) => __awaiter(void 0, void 0, void 0, function* () {
+    const count = yield queryInterface.sequelize.query('SELECT COUNT(*) FROM subscription_packages');
+    if (parseInt(count[0][0].count) > 0) {
+        console.log('⚠️  Subscription packages already seeded, skipping...');
+        return;
+    }
+    yield queryInterface.bulkInsert('subscription_packages', [
+        {
+            name: 'Silver',
+            description: 'Basic free package',
+            monthly_price: 0.00,
+            yearly_price: 0.00,
+            features: JSON.stringify(['Basic features', 'Limited access']),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+        {
+            name: 'Gold',
+            description: 'Premium package with more features',
+            monthly_price: 500.00,
+            yearly_price: 5000.00,
+            features: JSON.stringify(['All Silver features', 'Advanced predictions', 'Unlimited profiles']),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+        {
+            name: 'Platinum',
+            description: 'Ultimate package',
+            monthly_price: 1000.00,
+            yearly_price: 10000.00,
+            features: JSON.stringify(['All Gold features', 'Personal consultations', 'Priority support']),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+    ]);
+    console.log('✅ Subscription packages seeded successfully!');
 });

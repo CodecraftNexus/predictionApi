@@ -25,6 +25,7 @@ const compression_1 = __importDefault(require("compression"));
 const cors_1 = __importDefault(require("cors"));
 const ApikeyRoute_1 = __importDefault(require("./routes/ApikeyRoute"));
 const Adminroute_1 = __importDefault(require("./routes/Adminroute"));
+const Subscription_1 = __importDefault(require("./routes/Subscription"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json({ limit: "10mb" }));
@@ -75,6 +76,7 @@ app.use("/api/auth", AuthRoute_1.default);
 app.use("/api", profileRoute_1.default);
 app.use("/api", ApikeyRoute_1.default);
 app.use("/api/admin", Adminroute_1.default);
+app.use("/api/subscription", Subscription_1.default);
 function StartServer() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

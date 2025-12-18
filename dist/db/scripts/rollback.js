@@ -23,7 +23,10 @@ const rollback = () => __awaiter(void 0, void 0, void 0, function* () {
             'refresh_tokens',
             'users',
             'birth_locations',
-            'gender'
+            'gender',
+            'user_subscriptions',
+            'payments',
+            'subscription_packages',
         ];
         for (const table of tables) {
             try {

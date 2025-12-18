@@ -111,7 +111,7 @@ function getProfile(req, res) {
                     return ({
                         id: (profile === null || profile === void 0 ? void 0 : profile.id) || null,
                         name: (profile === null || profile === void 0 ? void 0 : profile.name) || null,
-                        nikname: (profile === null || profile === void 0 ? void 0 : profile.nikname) || null,
+                        nickname: (profile === null || profile === void 0 ? void 0 : profile.nikname) || null,
                         profileImg: ((_b = (_a = profile === null || profile === void 0 ? void 0 : profile.ProfileImages) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.imagePath) || null,
                     });
                 }) || [],

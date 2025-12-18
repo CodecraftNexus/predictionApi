@@ -35,6 +35,9 @@ const Env = zod_1.z.object({
     navamApi: zod_1.z.string(),
     astrologic: zod_1.z.string(),
     DB_SSL: zod_1.z.string(),
+    PAYHERE_SANDBOX: zod_1.z.string(),
+    PAYHERE_MERCHANT_SECRET: zod_1.z.string(),
+    PAYHERE_MERCHANT_ID: zod_1.z.string(),
 });
 exports.env = Env.parse(process.env);
 exports.corsOrigins = exports.env.CORS_ORIGINS.split(",").map((s) => s.trim());

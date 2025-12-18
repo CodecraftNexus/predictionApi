@@ -10,6 +10,9 @@ const JobCategory_1 = require("./JobCategory");
 const EducationqualificationsItem_1 = require("./EducationqualificationsItem");
 const EducationqualificationsCategory_1 = require("./EducationqualificationsCategory");
 const Admin_1 = require("./Admin");
+const SubscriptionPackage_1 = require("./SubscriptionPackage");
+const UserSubscription_1 = require("./UserSubscription");
+const Payment_1 = require("./Payment");
 function initRelationship(models) {
     (0, BirthLocation_1.initBirthLocationRelationship)(models);
     (0, Gender_1.initGenderRelationship)(models),
@@ -20,4 +23,7 @@ function initRelationship(models) {
     (0, EducationqualificationsItem_1.initEducationqualificationsItemRelationship)(models);
     (0, EducationqualificationsCategory_1.initEducationqualificationsCategoryRelationship)(models);
     (0, Admin_1.initAdminRelationship)(models);
+    (0, SubscriptionPackage_1.initSubscriptionPackageRelationship)(models);
+    (0, UserSubscription_1.initUserSubscriptionRelationship)(models);
+    (0, Payment_1.initPaymentRelationship)(models);
 }

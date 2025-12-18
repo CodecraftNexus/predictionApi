@@ -34,6 +34,7 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
+    "uuid": "^13.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -51,6 +52,7 @@
     "@types/pg": "^8.16.0",
     "@types/sequelize": "^4.28.20",
     "@types/swagger-ui-express": "^4.1.8",
+    "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.10",
     "sequelize-typescript": "^2.1.6",
     "ts-node": "^10.9.2",
