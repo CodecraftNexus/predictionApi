@@ -8,8 +8,8 @@
     "dev": "nodemon --exec ts-node src/app.ts",
     "build": "tsc",
     "watch": "tsc --watch",
-    "migrate": "ts-node src/db/scripts/migrate.ts",
-    "migrate:rollback": "ts-node src/db/scripts/rollback.ts",
+    "migrate": "node dist/db/scripts/migrate.js",
+    "migrate:rollback": "node dist/db/scripts/rollback.js",
     "db:reset": "npm run migrate:rollback && npm run migrate"
   },
   "author": "",
@@ -34,7 +34,7 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "uuid": "^13.0.0",
+    "uuid": "^8.3.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {
