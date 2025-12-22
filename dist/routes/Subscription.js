@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const subscriptionController_1 = require("../controllers/subscriptionController");
+const router = (0, express_1.Router)();
+router.get('/packages', auth_1.requireAuth, subscriptionController_1.getSubscriptionPackages);
+router.get('/current', auth_1.requireAuth, subscriptionController_1.getCurrentSubscription);
+router.post('/initiate', auth_1.requireAuth, subscriptionController_1.initiateSubscriptionPayment);
+router.post('/payhere-notify', subscriptionController_1.payhereNotify);
+exports.default = router;
