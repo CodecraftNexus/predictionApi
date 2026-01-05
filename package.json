@@ -8,14 +8,17 @@
     "dev": "nodemon --exec ts-node src/app.ts",
     "build": "tsc",
     "watch": "tsc --watch",
-    "migrate": "node dist/db/scripts/migrate.js",
-    "migrate:rollback": "node dist/db/scripts/rollback.js",
+    "migrate": "ts-node src/db/scripts/migrate.ts",
+    "migrate:rollback": "ts-node src/db/scripts/rollback.ts",
     "db:reset": "npm run migrate:rollback && npm run migrate"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/translate": "^9.3.0",
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^2.4.3",
+    "bottleneck": "^2.19.5",
     "cloudinary": "^2.8.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
@@ -34,7 +37,7 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "uuid": "^8.3.2",
+    "uuid": "^13.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
