@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const UserAditionalData_1 = require("../Controllers/UserAditionalData");
+const FeedbackController_1 = require("../Controllers/FeedbackController");
+const router = (0, express_1.Router)();
+router.get('/survey/questions', auth_1.requireAuth, UserAditionalData_1.FeedbackController.getQuestions);
+router.get('/survey/answers', auth_1.requireAuth, UserAditionalData_1.FeedbackController.getUserAnswers);
+router.post('/survey/answers', auth_1.requireAuth, UserAditionalData_1.FeedbackController.saveAnswers);
+router.get('/survey/deceased-family', auth_1.requireAuth, UserAditionalData_1.FeedbackController.getDeceasedFamily);
+router.post('/survey/deceased-family', auth_1.requireAuth, UserAditionalData_1.FeedbackController.saveDeceasedFamily);
+router.delete('/survey/deceased-family/:id', auth_1.requireAuth, UserAditionalData_1.FeedbackController.deleteDeceasedMember);
+router.get('/survey/statistics', auth_1.requireAuth, UserAditionalData_1.FeedbackController.getFeedbackStatus);
+router.get("/feedback/getAllData", UserAditionalData_1.FeedbackController.getAllFeedbacks);
+router.get('/feedback/status', auth_1.requireAuth, FeedbackController_1.getFeedbackStatus);
+exports.default = router;

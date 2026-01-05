@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const profileController_1 = require("../Controllers/profileController");
+const FeedbackController_1 = require("../Controllers/FeedbackController");
+const UserAditionalData_1 = require("../Controllers/UserAditionalData");
+const router = (0, express_1.Router)();
+router.get('/profile', auth_1.requireAuth, profileController_1.getProfile);
+router.put('/profile', auth_1.requireAuth, profileController_1.UpdateProfile);
+router.post('/profile/switch', auth_1.requireAuth, profileController_1.switchProfile);
+router.post('/addProfile', auth_1.requireAuth, profileController_1.addnewProfile);
+router.get('/jobs/options', profileController_1.getJobsOptions);
+router.get('/education/options', profileController_1.getEducationOptions);
+router.get("/feedback", auth_1.requireAuth, FeedbackController_1.getAllFeedbacks);
+router.get("/feedback/getAllData", UserAditionalData_1.FeedbackController.getAllFeedbacks);
+exports.default = router;

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const HorosopeControllers_1 = require("../Controllers/HorosopeControllers");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.post('/planethouse', auth_1.requireAuth, HorosopeControllers_1.PlanetHouse);
+router.post('/navanshaka', auth_1.requireAuth, HorosopeControllers_1.Navanshaka);
+router.post('/mahadasha', auth_1.requireAuth, HorosopeControllers_1.Mahadasha);
+router.post('/anthardasha', auth_1.requireAuth, HorosopeControllers_1.AntharDasha);
+router.post('/astrologic', auth_1.requireAuth, HorosopeControllers_1.AstrologicalDetails);
+exports.default = router;

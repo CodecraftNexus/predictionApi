@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const PredictionController_1 = require("../Controllers/PredictionController");
+const FeedbackController_1 = require("../Controllers/FeedbackController");
+const router = (0, express_1.Router)();
+router.get('/:planetName', auth_1.requireAuth, PredictionController_1.LifeTimePredictions);
+router.post("/feedback", auth_1.requireAuth, FeedbackController_1.submitFeedback);
+exports.default = router;
